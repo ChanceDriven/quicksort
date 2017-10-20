@@ -1,36 +1,57 @@
 package quicksort;
 
+import quicksort.Visitors.ISortOrder;
+
 public abstract class quickabstract {
-	public void sort(int[] A, int low, int high) {
-		if (low < high) {
-			int p = partition(A, low, high);
-			sort(A, low, p);
-			sort(A, p + 1, high);
-		}
+	
+	private ISortOrder sortOrder;
+	
+	public void sort(int[] A, ISortOrder sortOrder) {
+		quicksort(A, 0, A.length - 1, true);
+		this.sortOrder = sortOrder;
+		
+		sortOrder.sort(A);
 	}
 	
-	public abstract int pickPivot(int low, int high);
+	public void sort(int[] A, boolean sortAscending) {
+		quicksort(A, 0, A.length - 1, sortAscending);
+	}
 	
-	public int partition(int[] A, int low, int high) {
-		int pivot = pickPivot(low, high);
-		int pivotVal = A[pivot];
-		
-		int i = low - 1;
-		for (int j = low; j < high -1; j++) {
-			if (A[j] < pivotVal) {
+	private void quicksort(int[] A, int low, int high, boolean sortAscending) {
+		int i = low, j = high;
+		// Get the pivot element from the middle of the list
+		int pivot = pickPivot(A, low, high);
+
+		while (i <= j) {
+			
+			while(A[i] < pivot) {
 				i++;
-				int temp = A[i];
-				A[i] = A[j];
-				A[j] = temp;
 			}
+
+			while (A[j] > pivot) {
+				j--;    
+			}
+			if (i <= j) {
+				swap(A, i, j);
+				i++;
+				j--;
+			}
+
 		}
-		
-		if (A[high] < A[i+1]) {
-			int temp = A[i+1];
-			A[i+1] = A[high];
-			A[high] = temp;
+		// Recursion
+		if (low < j) {
+			quicksort(A, low, j, sortAscending);
 		}
-		
-		return i + 1;
+		if (i < high) {
+			quicksort(A, i, high, sortAscending);
+		}
+	}
+
+	protected abstract int pickPivot(int[] A, int low, int high);
+	
+	private void swap(int[] a, int i, int j) {
+		int t = a[i];
+		a[i] = a[j];
+		a[j] = t;
 	}
 }
